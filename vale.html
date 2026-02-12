@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Be My Valentine?</title>
+    <style>
+    :root { --bg1:#ffdde1; --bg2:#ee9ca7; --card:#ffffffcc; --text:#1f2937; }
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+    .card{
+      width:min(560px, 92vw);
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid #ffffff80;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px #00000025;
+      padding: 28px 22px 22px;
+      text-align:center;
+      position:relative;
+    }
+    h1{ margin: 6px 0 10px; font-size: 34px; color: var(--text); }
+    p{ margin: 0 0 10px; color:#374151; font-size: 16px; }
+
+    /* Tabasco-ish hot sauce (inspired look; no brand logo) */
+    .hot-sauce{
+      margin: 10px auto 2px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      animation: saucePop .9s ease-out;
+      user-select:none;
+    }
+    .hot-caption{
+      margin-top: 4px;
+      font-weight: 800;
+      font-size: 13px;
+      color:#991b1b;
+    }
+    @keyframes saucePop{
+      from{ transform: scale(.6) rotate(-6deg); opacity:0; }
+      to{ transform: scale(1) rotate(0deg); opacity:1; }
+    }
+
+    .btns{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top: 14px; }
+    button{
+      border:0; cursor:pointer;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 16px;
+      transition: transform .12s ease, box-shadow .12s ease;
+      box-shadow: 0 10px 25px #00000020;
+    }
+    #yes{
+      background: #16a34a;
+      color:white;
+    }
+    #yes:hover{ transform: translateY(-1px) scale(1.02); }
+
+    #no{
+      background:#ef4444;
+      color:white;
+      position:absolute;
+      left: 50%;
+      top: 76%;
+      transform: translate(-50%, -50%);
+      touch-action: none;
+    }
+
+    .hearts{
+      position:absolute; inset:0; pointer-events:none; overflow:hidden;
+    }
+    .heart{
+      position:absolute; font-size: 18px; opacity:.75;
+      animation: floatUp 6s linear infinite;
+    }
+    @keyframes floatUp{
+      from{ transform: translateY(20vh); opacity:0; }
+      10%{ opacity:.85; }
+      to{ transform: translateY(-120vh); opacity:0; }
+    }
+
+    .msg{
+      margin-top: 14px;
+      font-weight: 900;
+      color:#111827;
+      min-height: 24px;
+    }
+    .small{
+      margin-top: 8px;
+      font-size: 12px;
+      color:#6b7280;
+    }
+
+    /* Yes popup */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 999;
+    }
+    .popup{
+      width:min(560px, 95vw);
+      background:#ffffff;
+      border-radius: 22px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.35);
+      overflow:hidden;
+      transform: scale(.92);
+      opacity:0;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+    .overlay.show{ display:flex; }
+    .overlay.show .popup{ transform: scale(1); opacity:1; }
+
+    .popup img{
+      width:100%;
+      height:auto;
+      display:block;
+      max-height: 55vh;
+      object-fit: cover;
+    }
+    .popup-body{
+      padding: 14px 16px 16px;
+      text-align:left;
+    }
+    .popup-title{
+      margin:0 0 6px;
+      font-size: 18px;
+      font-weight: 950;
+      color:#111827;
+    }
+    .popup-text{
+      margin:0;
+      color:#374151;
+      line-height: 1.35;
+      font-weight: 650;
+    }
+    .close{
+      margin-top: 12px;
+      display:inline-block;
+      background:#111827;
+      color:white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor:pointer;
+      border:0;
+    }
+  </style>
+</head>
+<body>
+<div class="hearts" id="hearts"></div>
+
+<div class="card" id="card">
+    <h1>💘 Anisha, will you be my Valentine? 💘</h1>
+    <p>One cute date. Good food. Good vibes. You + me.</p>
+
+    <div class="hot-sauce" id="hotSauce" aria-label="Hot sauce bottle">
+        <!-- Tabasco-inspired shape: green cap + slender bottle + diamond label -->
+        <svg width="130" height="190" viewBox="0 0 130 190" xmlns="http://www.w3.org/2000/svg">
+            <!-- cap -->
+            <rect x="52" y="0" width="26" height="22" rx="6" fill="#14532d"/>
+            <rect x="50" y="18" width="30" height="10" rx="6" fill="#166534"/>
+            <!-- neck -->
+            <rect x="56" y="28" width="18" height="22" rx="6" fill="#7c2d12"/>
+            <!-- bottle body -->
+            <path d="M50 50
+                 C46 70,42 92,42 120
+                 C42 160,52 182,65 182
+                 C78 182,88 160,88 120
+                 C88 92,84 70,80 50
+                 Z"
+                  fill="#dc2626"/>
+            <!-- highlight -->
+            <path d="M53 62
+                 C50 78,48 96,48 120
+                 C48 152,55 170,60 175
+                 C55 170,52 152,52 120
+                 C52 96,54 78,57 62
+                 Z"
+                  fill="#ef4444" opacity=".55"/>
+
+            <!-- diamond label -->
+            <g transform="translate(65 112) rotate(45)">
+                <rect x="-22" y="-22" width="44" height="44" rx="8" fill="#ffffff"/>
+                <rect x="-20" y="-20" width="40" height="40" rx="7" fill="none" stroke="#111827" stroke-width="1.5" opacity=".25"/>
+            </g>
+
+            <!-- label text (not rotated) -->
+            <text x="65" y="106" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">HOT</text>
+            <text x="65" y="122" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">STUFF</text>
+
+            <!-- little flame -->
+            <path d="M65 168
+                 C74 160,78 148,72 140
+                 C76 150,60 150,62 140
+                 C54 148,52 160,65 168Z"
+                  fill="#f97316"/>
+        </svg>
+        <div class="hot-caption">Hot Stuff 🌶️</div>
+    </div>
+
+    <div class="btns">
+        <button id="yes">Yes 😍</button>
+    </div>
+
+    <button id="no" aria-label="No" tabindex="-1">No 🙈</button>
+
+    <div class="msg" id="msg"></div>
+    <div class="small">Tip: try to click “No”… 👀</div>
+</div>
+
+<!-- YES overlay popup (you upload valentine.jpg next to index.html) -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Valentine popup">
+    <div class="popup">
+        <img id="popupImg" src="valentine.jpg" alt="Us / Valentine photo">
+        <div class="popup-body">
+            <p class="popup-title">You just made my day 💖</p>
+            <p class="popup-text" id="popupText"></p>
+            <button class="close" id="closeBtn">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const card = document.getElementById('card');
+    const noBtn = document.getElementById('no');
+    const yesBtn = document.getElementById('yes');
+    const msg = document.getElementById('msg');
+    const hotSauce = document.getElementById('hotSauce');
+
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('closeBtn');
+    const popupText = document.getElementById('popupText');
+
+    let dodges = 0;
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function moveNoButton() {
+      const cardRect = card.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const pad = 18;
+      const minX = pad;
+      const maxX = cardRect.width - btnRect.width - pad;
+      const minY = 130;
+      const maxY = cardRect.height - btnRect.height - pad;
+
+      const x = Math.random() * (maxX - minX) + minX;
+      const y = Math.random() * (maxY - minY) + minY;
+
+      noBtn.style.left = x + 'px';
+      noBtn.style.top = y + 'px';
+      noBtn.style.transform = 'translate(0,0)';
+    }
+
+    // "No" is never allowed to be clicked — it always runs away.
+    function dodgeForever() {
+      dodges++;
+      const lines = [
+        "Nope 😌",
+        "Still nope 😅",
+        "Nice try 💨",
+        "Anisha… be serious 😜",
+        "Just hit Yes 😍",
+        "Okay you’re adorable 😂"
+      ];
+      msg.textContent = lines[clamp(dodges-1, 0, lines.length-1)];
+
+      moveNoButton();
+
+      hotSauce.style.transform = 'scale(1.02) rotate(2deg)';
+      setTimeout(() => hotSauce.style.transform = '', 180);
+    }
+
+    // Desktop
+    noBtn.addEventListener('mouseenter', dodgeForever);
+    noBtn.addEventListener('mousemove', dodgeForever);
+
+    // Mobile
+    noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodgeForever(); }, {passive:false});
+    noBtn.addEventListener('touchmove', (e) => { e.preventDefault(); dodgeForever(); }, {passive:false});
+
+    // Block click + keyboard activation completely
+    noBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); dodgeForever(); });
+    noBtn.addEventListener('keydown', (e) => { e.preventDefault(); e.stopPropagation(); dodgeForever(); });
+
+    yesBtn.addEventListener('click', () => {
+      msg.textContent = "YAYYY 💖";
+      hotSauce.style.transform = 'scale(1.08) rotate(-3deg)';
+      setTimeout(() => hotSauce.style.transform = '', 600);
+
+      // Romantic message (tuned to “stand with you / us” vibe)
+      popupText.textContent =
+        "Anisha, I’m not just asking you to be my Valentine — I’m choosing you. " +
+        "I value you deeply, and I’m here to stand with you, to protect our peace, " +
+        "and to build something real together… one step at a time. 💕";
+
+      overlay.classList.add('show');
+    });
+
+    closeBtn.addEventListener('click', () => overlay.classList.remove('show'));
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
+
+    // Hearts background
+    const hearts = document.getElementById('hearts');
+    const heartChars = ["💗","💖","💘","💝","💕"];
+    function spawnHeart(){
+      const s = document.createElement('div');
+      s.className = 'heart';
+      s.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.animationDuration = (4 + Math.random()*4) + 's';
+      s.style.fontSize = (14 + Math.random()*18) + 'px';
+      hearts.appendChild(s);
+      setTimeout(()=>s.remove(), 8000);
+    }
+    setInterval(spawnHeart, 250);
+
+    moveNoButton();
+  </script>
+</body>
+</html>
